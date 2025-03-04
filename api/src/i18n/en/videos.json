@@ -1,0 +1,6 @@
+{
+  "video-not-found": "Video not found",
+  "video-already-exists": "Video already exists",
+  "invalid-video-url": "Invalid video URL",
+  "api-key-is-missing": "API key is missing"
+}

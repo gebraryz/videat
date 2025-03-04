@@ -1,0 +1,41 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearchPostgres"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model VideoClickHistory {
+  id      String @id
+  videoId String @unique @map("video_id")
+
+  clicks    Int
+  createdAt DateTime @default(now()) @map("created_at")
+
+  video Video @relation(fields: [videoId], references: [id])
+
+  @@map("video_click_history")
+}
+
+model Video {
+  id         String @id
+  videoId    String @unique @map("video_id")
+  channelId  String @map("channel_id")
+  categoryId String @map("category_id")
+
+  title     String
+  language  String?
+  tags      String[]
+  duration  Int
+  createdAt DateTime @default(now()) @map("created_at")
+
+  clickHistory VideoClickHistory?
+
+  @@index([title])
+  @@index([tags], type: Gin)
+  @@index([createdAt])
+  @@map("videos")
+}

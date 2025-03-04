@@ -1,0 +1,6 @@
+{
+  "video-not-found": "Film nie został znaleziony",
+  "video-already-exists": "Ten film już został dodany",
+  "invalid-video-url": "Nieprawidłowy adres URL filmu",
+  "api-key-is-missing": "Brak klucza API"
+}

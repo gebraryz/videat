@@ -1,0 +1,29 @@
+# Node.js dependencies (to avoid copying node_modules into the container)
+node_modules/
+
+# Docker related files
+.docker/
+docker-compose.override.yml
+
+# IDE specific files
+.vscode/
+.idea/
+
+# Log files
+*.log
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# Build and output directories
+dist/
+build/
+
+# Coverage directory for tests
+coverage/
+
+# Temporary files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
