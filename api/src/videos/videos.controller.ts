@@ -30,6 +30,13 @@ export class VideosController {
     return data;
   }
 
+  @Get("languages")
+  async getVideosLanguages() {
+    const languages = await this.videosService.getVideosLanguages();
+
+    return languages;
+  }
+
   @Post()
   @Throttle({ default: { limit: 5, ttl: 60 } })
   async createVideo(@Body() dto: CreateVideoDto) {

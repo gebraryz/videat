@@ -11,7 +11,7 @@ import { PrismaService } from "src/prisma/prisma.service";
 import { EnvironmentVariables } from "src/utils/env";
 import { GetVideosDto } from "./dto/get-videos.dto";
 import { YouTubeVideo } from "./videos.types";
-import { I18nService } from "nestjs-i18n";
+import { I18nContext, I18nService } from "nestjs-i18n";
 import { I18nTranslations } from "src/types/generated/i18n";
 
 interface YouTubeApiResponse {
@@ -180,6 +180,24 @@ export class VideosService {
     });
 
     return createdVideo;
+  }
+
+  public async getVideosLanguages() {
+    const { lang: language } = I18nContext.current();
+
+    const languages = await this.prismaService.video.findMany({
+      select: { language: true },
+      distinct: ["language"],
+    });
+
+    const displayNames = new Intl.DisplayNames([language], {
+      type: "language",
+    });
+
+    return languages.map(({ language }) => ({
+      code: language,
+      name: displayNames.of(language) || language,
+    }));
   }
 
   public async increaseVideoClicks(videoId: string) {
