@@ -165,3 +165,30 @@ export interface YouTubeLiveStreamingDetails {
   concurrentViewers?: string; // Number of current viewers (as string)
   activeLiveChatId?: string; // ID of the live chat
 }
+// Type for a single video category (youtube#videoCategory)
+export interface YouTubeVideoCategory {
+  kind: "youtube#videoCategory"; // Constant value for the category
+  etag: string; // ETag for caching
+  id: string; // Category ID, e.g. "1", "10", "23"
+  snippet: YouTubeVideoCategorySnippet; // Category metadata
+}
+
+// Type for the snippet in a video category
+export interface YouTubeVideoCategorySnippet {
+  title: string; // Category name, e.g. "Film & Animation"
+  assignable: boolean; // Whether the category can be assigned to a video
+  channelId: string; // Channel ID, e.g. "UCBR8-60-B28hp2BmDPdntcQ"
+}
+
+// Type for the response of video category list (youtube#videoCategoryListResponse)
+export interface YouTubeVideoCategoryListResponse {
+  kind: "youtube#videoCategoryListResponse"; // Constant value for the category list
+  etag: string; // ETag for the entire response
+  items: YouTubeVideoCategory[]; // Array of categories
+  nextPageToken?: string; // Optional token for the next page
+  prevPageToken?: string; // Optional token for the previous page
+  pageInfo?: {
+    totalResults: number; // Total number of results
+    resultsPerPage: number; // Number of results per page
+  }; // Optional pagination info
+}

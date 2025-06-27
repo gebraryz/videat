@@ -37,6 +37,27 @@ export class VideosController {
     return languages;
   }
 
+  @Get("categories")
+  async getVideosCategories() {
+    const categories = await this.videosService.getVideosCategories();
+
+    return categories;
+  }
+
+  @Get("tags")
+  async getVideosTags() {
+    const tags = await this.videosService.getVideosTags();
+
+    return tags;
+  }
+
+  @Get("random")
+  async getRandomVideo() {
+    const data = await this.videosService.getRandomVideo();
+
+    return data;
+  }
+
   @Post()
   @Throttle({ default: { limit: 5, ttl: 60 } })
   async createVideo(@Body() dto: CreateVideoDto) {

@@ -6,19 +6,26 @@ import {
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { nanoid } from "nanoid";
+import { I18nContext, I18nService } from "nestjs-i18n";
 import { firstValueFrom } from "rxjs";
 import { PrismaService } from "src/prisma/prisma.service";
+import { I18nTranslations } from "src/types/generated/i18n";
 import { EnvironmentVariables } from "src/utils/env";
 import { GetVideosDto } from "./dto/get-videos.dto";
-import { YouTubeVideo } from "./videos.types";
-import { I18nContext, I18nService } from "nestjs-i18n";
-import { I18nTranslations } from "src/types/generated/i18n";
+import { YouTubeVideo, YouTubeVideoCategory } from "./videos.types";
 
 interface YouTubeApiResponse {
   kind: string;
   etag: string;
   items: YouTubeVideo[];
   pageInfo: { totalResults: number; resultsPerPage: number };
+}
+
+export interface YouTubeApiCategoryListResponse {
+  kind: "youtube#videoCategoryListResponse";
+  etag: string;
+  items: YouTubeVideoCategory[];
+  pageInfo?: { totalResults: number; resultsPerPage: number };
 }
 
 @Injectable()
@@ -49,23 +56,27 @@ export class VideosService {
       skip,
       take: limit,
       where: {
-        language: language ? { equals: language } : undefined,
-        tags: tags ? { hasSome: tags } : undefined,
-        channelId: channelId ? { equals: channelId } : undefined,
-        categoryId: categoryId ? { equals: categoryId } : undefined,
-        title: search
-          ? {
-              search: search
-                .split(" ")
-                .map((word) => `${word}:*`)
-                .join(" | "),
-            }
-          : undefined,
+        AND: [
+          language ? { language: { equals: language } } : {},
+          tags ? { tags: { hasSome: tags } } : {},
+          channelId ? { channelId: { equals: channelId } } : {},
+          categoryId ? { categoryId: { equals: categoryId } } : {},
+          search
+            ? {
+                AND: search.split(" ").map((word) => ({
+                  OR: [
+                    { title: { search: `${word}:*` } },
+                    { tags: { hasSome: [word] } },
+                  ],
+                })),
+              }
+            : {},
+        ],
       },
     };
 
     const [count, videos] = await this.prismaService.$transaction([
-      this.prismaService.video.count(options),
+      this.prismaService.video.count(),
       this.prismaService.video.findMany({
         ...options,
         orderBy: {
@@ -79,6 +90,7 @@ export class VideosService {
         select: {
           id: true,
           videoId: true,
+          categoryId: true,
           title: true,
           duration: true,
           clickHistory: {
@@ -94,14 +106,54 @@ export class VideosService {
           this.setVideoUrlByVideoId(video.videoId)
         );
 
+        const {
+          snippet: {
+            defaultAudioLanguage,
+            defaultLanguage,
+            title,
+            channelId,
+            channelTitle,
+            description,
+            thumbnails,
+            tags,
+          },
+          id,
+          contentDetails,
+        } = data;
+
+        const languageProvidedByYouTube =
+          defaultAudioLanguage || defaultLanguage;
+        const detectedLanguage = await this.detectLanguage(
+          `${title} ${description || ""}`
+        );
+
+        const languageCode =
+          languageProvidedByYouTube ?? detectedLanguage.trim();
+
+        const languageDisplayName = this.i18n.t("videos.language", {
+          args: {
+            language: new Intl.DisplayNames([I18nContext.current().lang], {
+              type: "language",
+            }).of(
+              languageProvidedByYouTube ??
+                detectedLanguage.trim() ??
+                languageProvidedByYouTube
+            ),
+          },
+        });
+
         metadata.push({
           id: video.id,
-          videoId: data.id,
-          title: data.snippet.title,
+          videoId: id,
+          categoryId,
+          title: title,
+          tags: tags,
+          language: { name: languageDisplayName, code: languageCode },
+          channel: { id: channelId, title: channelTitle },
           clicks: video.clickHistory ? video.clickHistory.clicks : 0,
-          url: this.setVideoUrlByVideoId(data.id),
-          duration: this.parseDuration(data.contentDetails.duration),
-          thumbnails: data.snippet.thumbnails,
+          url: this.setVideoUrlByVideoId(id),
+          duration: this.parseDuration(contentDetails.duration),
+          thumbnails: thumbnails,
         });
       }
     }
@@ -196,8 +248,78 @@ export class VideosService {
 
     return languages.map(({ language }) => ({
       code: language,
-      name: displayNames.of(language) || language,
+      name: this.i18n.t("videos.language", {
+        args: { language: displayNames.of(language) || language },
+      }),
     }));
+  }
+
+  public async getVideosCategories() {
+    const { lang: language } = I18nContext.current();
+
+    const apiKey = this.configService.getOrThrow("YOUTUBE_API_KEY", {
+      infer: true,
+    });
+
+    const { data: categories } = await firstValueFrom(
+      this.httpService.get<YouTubeApiCategoryListResponse>(
+        `https://www.googleapis.com/youtube/v3/videoCategories?part=snippet&regionCode=US&key=${apiKey}`
+      )
+    );
+
+    if (!categories || categories.items.length === 0) {
+      throw new BadRequestException("Categories not found");
+    }
+
+    const updatedCategories = categories.items
+      .map((item) => ({
+        id: item.id,
+        title:
+          language === "en"
+            ? item.snippet.title
+            : this.i18n.t(
+                `videos.categories.${item.id as keyof I18nTranslations["videos"]["categories"]}`
+              ),
+      }))
+      .sort((a, b) => a.title.localeCompare(b.title));
+
+    return updatedCategories;
+  }
+
+  public async getVideosTags() {
+    const tags = await this.prismaService.video.findMany({
+      select: { tags: true },
+    });
+
+    const allTags = tags.flatMap((video) => video.tags);
+
+    const uniqueTags = [...new Set(allTags)];
+
+    return uniqueTags.filter((tag) => tag).map((tag) => ({ name: tag }));
+  }
+
+  public async getRandomVideo() {
+    const video = await this.prismaService.video.findFirst({
+      orderBy: { createdAt: "desc" },
+      where: { language: I18nContext.current().lang },
+    });
+
+    if (!video) {
+      throw new BadRequestException(this.i18n.t("videos.video-not-found"));
+    }
+
+    const metadata = await this.generateVideoMetadata(
+      this.setVideoUrlByVideoId(video.videoId)
+    );
+
+    return {
+      id: video.id,
+      videoId: metadata.id,
+      title: metadata.snippet.title,
+      url: this.setVideoUrlByVideoId(metadata.id),
+      duration: this.parseDuration(metadata.contentDetails.duration),
+      thumbnails: metadata.snippet.thumbnails,
+    };
   }
 
   public async increaseVideoClicks(videoId: string) {
