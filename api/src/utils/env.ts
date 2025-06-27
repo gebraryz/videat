@@ -26,11 +26,17 @@ export class EnvironmentVariables {
 
   @IsString()
   @MinLength(10)
+  APP_ORIGIN: string;
+
+  @IsString()
+  @MinLength(10)
   YOUTUBE_API_KEY: string;
 
   @IsLocale()
   FALLBACK_LANGUAGE: string;
 }
+
+console.log(process.env.APP_ORIGIN);
 
 export const validateEnv = (config: Record<string, unknown>) => {
   const validatedConfig = plainToInstance(EnvironmentVariables, config, {

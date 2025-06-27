@@ -1,22 +1,38 @@
 version: "3.8"
 
 services:
-  videat-api:
+  api:
     build:
-      context: .
+      context: ./api
       dockerfile: Dockerfile
+    volumes:
+      - ./api:/app
+      - /app/node_modules
     ports:
       - "8000:8000"
-    depends_on:
-      videat-db:
-        condition: service_healthy
     environment:
       - DATABASE_URL=${DATABASE_URL}
       - YOUTUBE_API_KEY=${YOUTUBE_API_KEY}
       - FALLBACK_LANGUAGE=${FALLBACK_LANGUAGE}
       - APP_PORT=${APP_PORT}
+      - APP_ORIGIN=${APP_ORIGIN}
+      - NODE_ENV=${NODE_ENV}
+    depends_on:
+      - videat-db
+    command: sh -c "npx prisma migrate deploy && npm run start:dev"
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
     volumes:
-      - /usr/src/app/node_modules
+      - ./web:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+    command: npm run dev
 
   videat-db:
     image: postgres:15-alpine
@@ -29,7 +45,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 5s
       retries: 5
       start_period: 10s

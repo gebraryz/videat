@@ -9,6 +9,8 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService<EnvironmentVariables>);
 
+  app.enableCors({ origin: configService.get("APP_ORIGIN", { infer: true }) });
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

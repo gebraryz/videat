@@ -1,0 +1,161 @@
+# Node.js dependencies
+node_modules/
+.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# Next.js build outputs
+.next/
+out/
+build/
+
+# Coverage reports
+coverage/
+
+# Environment variables
+.env*
+!.env.example
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# OS generated files
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+.VolumeIcon.icns
+Thumbs.db
+desktop.ini
+
+# IDEs
+## JetBrains IDEs (IntelliJ, WebStorm, PhpStorm, Rider, etc.)
+.idea/
+.idea/**/workspace.xml
+.idea/**/tasks.xml
+.idea/dictionaries
+.idea/**/dataSources/
+.idea/**/dataSources.ids
+.idea/**/dataSources.xml
+.idea/**/dataSources.local.xml
+.idea/**/sqlDataSources.xml
+.idea/**/dynamic.xml
+.idea/**/uiDesigner.xml
+.idea/**/gradle.xml
+.idea/**/libraries
+.idea/**/mongoSettings.xml
+.idea/replstate.xml
+.idea_modules/
+out/
+atlassian-ide-plugin.xml
+com_crashlytics_export_strings.xml
+crashlytics.properties
+crashlytics-build.properties
+fabric.properties
+
+## Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+*.plg
+*.opt
+*.vbw
+*.cache
+*.vspscc
+*.vssscc
+
+## VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.old
+*.orig
+*.rej
+
+# Typescript build info
+*.tsbuildinfo
+next-env.d.ts
+
+# PEM / certificates
+*.pem
+*.key
+*.crt
+
+# Misc
+*.log
+*.pidb
+*.svclog
+*.scc
+*.DotSettings.user
+
+# MacOS-specific files
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Backup files and reports
+_UpgradeReport_Files/
+Backup*/
+UpgradeLog*.XML
+UpgradeLog*.htm
+
+# SQL Server files
+*.mdf
+*.ldf
+*.ndf
+
+# Bundler & package managers
+.paket/
+paket-files/
+
+# Build folders
+bin/
+obj/
+dist/
+out/
+build/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Rust
+/target/
+
+# Misc archives
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# Ignore local env files, build and output folders for local Next.js projects
+.env
+dist/
+.webpack/
+.serverless/**/*.zip
+
+# Ignore npm/yarn lockfiles if you want (optional)
+# package-lock.json
+# yarn.lock
+
