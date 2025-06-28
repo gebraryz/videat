@@ -34,9 +34,11 @@ export class EnvironmentVariables {
 
   @IsLocale()
   FALLBACK_LANGUAGE: string;
-}
 
-console.log(process.env.APP_ORIGIN);
+  @IsString()
+  @MinLength(10)
+  AI_API_URL: string;
+}
 
 export const validateEnv = (config: Record<string, unknown>) => {
   const validatedConfig = plainToInstance(EnvironmentVariables, config, {
