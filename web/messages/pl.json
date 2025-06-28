@@ -1,3 +1,67 @@
 {
-  "hello": "Cześć"
+  "components": {
+    "pagination": {
+      "ellipsis": "Więcej stron",
+      "next": "Następna",
+      "previous": "Poprzednia"
+    },
+    "search": {
+      "categories": {
+        "category": "Kategoria",
+        "no-category-found": "Nie znaleziono kategorii"
+      },
+      "category": "Kategoria",
+      "clear_all_filters": "Wyczyść wszystko",
+      "clear_category": "Wyczyść kategorię",
+      "clear_language": "Wyczyść język",
+      "clear_search_query": "Wyczyść zapytanie",
+      "input": {
+        "example-search": "Przykładowe zapytanie"
+      },
+      "language": "Język",
+      "languages": {
+        "language": "Język",
+        "no-language-found": "Nie znaleziono języka"
+      },
+      "placeholder": "Szukaj filmów",
+      "placeholder_with_example": "Szukaj filmów (np. {title})",
+      "remove_tag": "Usuń tag",
+      "search_action": "Szukaj",
+      "search_query": "Wyszukiwanie",
+      "tag": "Tag",
+      "tags": {
+        "add_tag": "Dodaj tag",
+        "placeholder": "Dodaj tagi (oddzielone przecinkami)",
+        "remove_tag": "Usuń tag"
+      }
+    },
+    "top-bar": {
+      "homepage": "Strona główna",
+      "language-switcher": {
+        "english": "Angielski",
+        "polish": "Polski",
+        "switch": "Zmień język"
+      },
+      "theme-switcher": {
+        "dark": "Ciemny",
+        "light": "Jasny",
+        "system": "Systemowy",
+        "toggle": "Przełącz motyw"
+      }
+    },
+    "videos": {
+      "clear_filters": "Wyczyść filtry",
+      "help_text": "Aby znaleźć filmy, użyj filtrów. Możesz wyszukiwać według kategorii, języka, tagów i innych kryteriów.",
+      "no_results_description": "Nie znaleziono filmów pasujących do wybranych filtrów. Spróbuj zmienić kryteria wyszukiwania.",
+      "no_results_title": "Brak wyników",
+      "no_videos_description": "Nie znaleziono żadnych filmów. Spróbuj odświeżyć stronę lub sprawdź połączenie internetowe.",
+      "no_videos_title": "Brak filmów",
+      "refresh": "Odśwież",
+      "video-card": {
+        "details": "Szczegóły",
+        "thumbnail": "Miniaturka {title}",
+        "watch": "Oglądaj"
+      }
+    }
+  }
 }

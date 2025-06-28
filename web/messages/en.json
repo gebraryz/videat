@@ -1,3 +1,67 @@
 {
-  "hello": "Hello"
+  "components": {
+    "pagination": {
+      "ellipsis": "More pages",
+      "next": "Next",
+      "previous": "Previous"
+    },
+    "search": {
+      "categories": {
+        "category": "Category",
+        "no-category-found": "No category found"
+      },
+      "category": "Category",
+      "clear_all_filters": "Clear all",
+      "clear_category": "Clear category",
+      "clear_language": "Clear language",
+      "clear_search_query": "Clear search query",
+      "input": {
+        "example-search": "Example search"
+      },
+      "language": "Language",
+      "languages": {
+        "language": "Language",
+        "no-language-found": "No language found"
+      },
+      "placeholder": "Search videos",
+      "placeholder_with_example": "Search videos (e.g., {title})",
+      "remove_tag": "Remove tag",
+      "search_action": "Search",
+      "search_query": "Search query",
+      "tag": "Tag",
+      "tags": {
+        "add_tag": "Add tag",
+        "placeholder": "Add tags (comma separated)",
+        "remove_tag": "Remove tag"
+      }
+    },
+    "top-bar": {
+      "homepage": "Homepage",
+      "language-switcher": {
+        "english": "English",
+        "polish": "Polish",
+        "switch": "Switch language"
+      },
+      "theme-switcher": {
+        "dark": "Dark",
+        "light": "Light",
+        "system": "System",
+        "toggle": "Toggle theme"
+      }
+    },
+    "videos": {
+      "clear_filters": "Clear filters",
+      "help_text": "To find videos, use the filters. You can search by category, language, tags, and other criteria.",
+      "no_results_description": "We couldn't find any videos matching your filters. Try adjusting your search criteria.",
+      "no_results_title": "No results found",
+      "no_videos_description": "We couldn't find any videos. Try refreshing the page or check your internet connection.",
+      "no_videos_title": "No videos found",
+      "refresh": "Refresh",
+      "video-card": {
+        "details": "Details",
+        "thumbnail": "{title} thumbnail",
+        "watch": "Watch"
+      }
+    }
+  }
 }

@@ -93,6 +93,7 @@ export class VideosService {
           categoryId: true,
           title: true,
           duration: true,
+          language: true,
           clickHistory: {
             select: { clicks: true },
           },
@@ -113,7 +114,6 @@ export class VideosService {
             title,
             channelId,
             channelTitle,
-            description,
             thumbnails,
             tags,
           },
@@ -123,22 +123,14 @@ export class VideosService {
 
         const languageProvidedByYouTube =
           defaultAudioLanguage || defaultLanguage;
-        const detectedLanguage = await this.detectLanguage(
-          `${title} ${description || ""}`
-        );
 
-        const languageCode =
-          languageProvidedByYouTube ?? detectedLanguage.trim();
+        const languageCode = languageProvidedByYouTube ?? video.language;
 
         const languageDisplayName = this.i18n.t("videos.language", {
           args: {
             language: new Intl.DisplayNames([I18nContext.current().lang], {
               type: "language",
-            }).of(
-              languageProvidedByYouTube ??
-                detectedLanguage.trim() ??
-                languageProvidedByYouTube
-            ),
+            }).of(languageCode),
           },
         });
 
@@ -211,6 +203,31 @@ export class VideosService {
     }
 
     const metadata = await this.generateVideoMetadata(videoUrl);
+
+    let detectedLanguage: string | null = null;
+
+    try {
+      const { data } = await firstValueFrom(
+        this.httpService.post<{ language: string; confidence: number }>(
+          this.configService.getOrThrow("AI_API_URL", { infer: true }) +
+            "/detect-language",
+          {
+            value: `${metadata.snippet.title} ${metadata.snippet.description || ""}`,
+          }
+        )
+      );
+
+      detectedLanguage = data.language;
+    } catch (error) {
+      console.error("Language detection failed:", error.message);
+    }
+
+    const language =
+      metadata.snippet.defaultAudioLanguage ||
+      metadata.snippet.defaultLanguage ||
+      detectedLanguage.trim() ||
+      null;
+
     const createdVideo = await this.prismaService.video.create({
       data: {
         videoId,
@@ -220,14 +237,7 @@ export class VideosService {
         categoryId: metadata.snippet.categoryId,
         title: metadata.snippet.title,
         duration: this.parseDuration(metadata.contentDetails.duration),
-        language:
-          metadata.snippet.defaultAudioLanguage ||
-          metadata.snippet.defaultLanguage ||
-          (
-            await this.detectLanguage(
-              `${metadata.snippet.title} ${metadata.snippet.description || ""}`
-            )
-          ).trim(),
+        language,
       },
     });
 
@@ -441,19 +451,5 @@ export class VideosService {
     const seconds = match[3] ? parseInt(match[3], 10) : 0;
 
     return hours + minutes + seconds;
-  }
-
-  private async detectLanguage(text: string) {
-    const { franc } = await import("franc");
-    const { iso6393 } = await import("iso-639-3");
-
-    const languageInIso6393 = franc(text, { minLength: 10 });
-
-    const languageEntry = iso6393.find(
-      (language) => language.iso6393 === languageInIso6393
-    );
-    const languageInIso6391 = languageEntry.iso6391;
-
-    return languageInIso6391;
   }
 }
