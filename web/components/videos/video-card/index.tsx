@@ -71,9 +71,7 @@ export const VideoCard: FC<PartialVideoMetadata> = ({
               </Link>
             ) : null}
             <div>
-              <h3 className="font-bold">
-                <q>{title}</q>
-              </h3>
+              <h3 className="font-bold">{title}</h3>
               <Link
                 href={`/channel/${channel.id}`}
                 title={channel.title}
@@ -120,9 +118,7 @@ export const VideoCard: FC<PartialVideoMetadata> = ({
         <Dialog open={isThumbnailZoomed} onOpenChange={setIsThumbnailZoomed}>
           <DialogContent className="!max-w-[800px]">
             <DialogHeader>
-              <DialogTitle>
-                <q>{title}</q>
-              </DialogTitle>
+              <DialogTitle>{title}</DialogTitle>
             </DialogHeader>
             <div className="relative h-[400px] w-full">
               <Image src={thumbnailUrl} alt={title} fill />
